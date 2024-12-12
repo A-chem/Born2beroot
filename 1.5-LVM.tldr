@@ -59,7 +59,7 @@
 			"props": {
 				"color": "red",
 				"size": "m",
-				"w": 379.9921875,
+				"w": 380.9921875,
 				"text": "Logical Volume Manager (LVM)",
 				"font": "draw",
 				"textAlign": "middle",
@@ -268,7 +268,7 @@
 			"props": {
 				"color": "light-blue",
 				"size": "s",
-				"w": 380.765625,
+				"w": 286.5703125,
 				"text": "Example: /dev/sda or /dev/sdb1",
 				"font": "draw",
 				"textAlign": "middle",
@@ -623,7 +623,7 @@
 			"id": "shape:vd2x3RGme1Gr59dqzr8Ds",
 			"type": "geo",
 			"props": {
-				"w": 113.7578125,
+				"w": 114,
 				"h": 56.296875,
 				"geo": "rectangle",
 				"color": "red",
@@ -653,7 +653,7 @@
 			"id": "shape:RK9prFAavn1-AkSg0o8wn",
 			"type": "geo",
 			"props": {
-				"w": 117.63671875000001,
+				"w": 118,
 				"h": 56.296875,
 				"geo": "rectangle",
 				"color": "red",
@@ -706,7 +706,7 @@
 			"id": "shape:o1Vs0fZLHhQBI-KmlOub-",
 			"type": "geo",
 			"props": {
-				"w": 121.9296875,
+				"w": 122,
 				"h": 56.296875,
 				"geo": "rectangle",
 				"color": "red",
@@ -874,7 +874,7 @@
 			"id": "shape:hNdU9W41G8NAdIz-YvurU",
 			"type": "geo",
 			"props": {
-				"w": 113.7578125,
+				"w": 114,
 				"h": 56.296875,
 				"geo": "rectangle",
 				"color": "light-blue",
@@ -904,7 +904,7 @@
 			"id": "shape:r_rCdC59KbxGvnJZX_O7Y",
 			"type": "geo",
 			"props": {
-				"w": 117.63671875000001,
+				"w": 118,
 				"h": 56.296875,
 				"geo": "rectangle",
 				"color": "light-blue",
@@ -934,7 +934,7 @@
 			"id": "shape:oS8c2aT-UTG0WIWze6m6X",
 			"type": "geo",
 			"props": {
-				"w": 121.9296875,
+				"w": 122,
 				"h": 56.296875,
 				"geo": "rectangle",
 				"color": "light-blue",
@@ -1185,7 +1185,7 @@
 			"props": {
 				"color": "light-blue",
 				"size": "s",
-				"w": 20,
+				"w": 16,
 				"text": "",
 				"font": "draw",
 				"textAlign": "middle",
@@ -1449,7 +1449,7 @@
 			"id": "shape:M_0sNaFoBJC_FKiYu_S--",
 			"type": "geo",
 			"props": {
-				"w": 177.73882883200113,
+				"w": 178,
 				"h": 56.296875,
 				"geo": "rectangle",
 				"color": "light-blue",
@@ -1582,7 +1582,7 @@
 		},
 		{
 			"x": 186.02417720613826,
-			"y": 835.4723646994361,
+			"y": 839.7151277825478,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
@@ -2483,87 +2483,6 @@
 			"typeName": "shape"
 		},
 		{
-			"id": "pointer:pointer",
-			"typeName": "pointer",
-			"x": 1035.069634137295,
-			"y": 3694.8710742121943,
-			"lastActivityTimestamp": 1733845674103,
-			"meta": {}
-		},
-		{
-			"followingUserId": null,
-			"opacityForNextShape": 1,
-			"stylesForNextShape": {
-				"tldraw:size": "s",
-				"tldraw:color": "black",
-				"tldraw:geo": "rectangle",
-				"tldraw:textAlign": "middle"
-			},
-			"brush": null,
-			"scribbles": [],
-			"cursor": {
-				"type": "default",
-				"rotation": 0
-			},
-			"isFocusMode": false,
-			"exportBackground": true,
-			"isDebugMode": false,
-			"isToolLocked": false,
-			"screenBounds": {
-				"x": 0,
-				"y": 0,
-				"w": 1224,
-				"h": 1223
-			},
-			"insets": [
-				false,
-				false,
-				true,
-				false
-			],
-			"zoomBrush": null,
-			"isGridMode": false,
-			"isPenMode": false,
-			"chatMessage": "",
-			"isChatting": false,
-			"highlightedUserIds": [],
-			"isFocused": true,
-			"devicePixelRatio": 2,
-			"isCoarsePointer": false,
-			"isHoveringCanvas": true,
-			"openMenus": [],
-			"isChangingStyle": false,
-			"isReadonly": false,
-			"meta": {},
-			"duplicateProps": null,
-			"id": "instance:instance",
-			"currentPageId": "page:page",
-			"typeName": "instance"
-		},
-		{
-			"editingShapeId": "shape:NMWIeXngJBQLh1iB4wQdu",
-			"croppingShapeId": null,
-			"selectedShapeIds": [
-				"shape:NMWIeXngJBQLh1iB4wQdu"
-			],
-			"hoveredShapeId": "shape:NMWIeXngJBQLh1iB4wQdu",
-			"erasingShapeIds": [],
-			"hintingShapeIds": [],
-			"focusedGroupId": null,
-			"meta": {},
-			"id": "instance_page_state:page:page",
-			"pageId": "page:page",
-			"typeName": "instance_page_state"
-		},
-		{
-			"x": 1225.144991352914,
-			"y": -2343.428290349162,
-			"z": 0.4378075654144494,
-			"meta": {},
-			"id": "camera:page:page",
-			"typeName": "camera"
-		},
-		{
 			"meta": {},
 			"id": "binding:0kjSptCnrh0MPthX8WiSi",
 			"type": "arrow",
@@ -2846,7 +2765,7 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 81.93939195315886,
+			"x": 64.66204820315886,
 			"y": 18.59004221306759,
 			"rotation": 0,
 			"isLocked": false,
@@ -2857,9 +2776,9 @@
 			"props": {
 				"color": "black",
 				"size": "s",
-				"w": 236.4453125,
+				"w": 271,
 				"text": "sudo apt-get install lvm2",
-				"font": "draw",
+				"font": "mono",
 				"textAlign": "middle",
 				"autoSize": true,
 				"scale": 1
@@ -3010,7 +2929,7 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 81.31829820315886,
+			"x": 64.66204820315886,
 			"y": 18.59004221306759,
 			"rotation": 0,
 			"isLocked": false,
@@ -3021,9 +2940,9 @@
 			"props": {
 				"color": "black",
 				"size": "s",
-				"w": 237.6875,
+				"w": 271,
 				"text": "lgcreate group1 /dev/sda1",
-				"font": "draw",
+				"font": "mono",
 				"textAlign": "middle",
 				"autoSize": true,
 				"scale": 1
@@ -3256,7 +3175,7 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 53.49017320315886,
+			"x": 26.86126695315886,
 			"y": 18.59004221306759,
 			"rotation": 0,
 			"isLocked": false,
@@ -3267,9 +3186,9 @@
 			"props": {
 				"color": "black",
 				"size": "s",
-				"w": 293.34375,
+				"w": 346.6015625,
 				"text": "lvresize -L +5G /dev/group1/vol1",
-				"font": "draw",
+				"font": "mono",
 				"textAlign": "middle",
 				"autoSize": true,
 				"scale": 1
@@ -3297,7 +3216,7 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 78.59954820315886,
+			"x": 59.25970445315886,
 			"y": 18.59004221306759,
 			"rotation": 0,
 			"isLocked": false,
@@ -3308,9 +3227,9 @@
 			"props": {
 				"color": "black",
 				"size": "s",
-				"w": 243.125,
+				"w": 281.8046875,
 				"text": "mkfs.ext4 /dev/group1/vol1",
-				"font": "draw",
+				"font": "mono",
 				"textAlign": "middle",
 				"autoSize": true,
 				"scale": 1
@@ -3338,7 +3257,7 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 81.97454820315886,
+			"x": 70.06048570315886,
 			"y": 18.59004221306759,
 			"rotation": 0,
 			"isLocked": false,
@@ -3349,9 +3268,9 @@
 			"props": {
 				"color": "black",
 				"size": "s",
-				"w": 236.375,
+				"w": 260.203125,
 				"text": "vgextend group1 /dev/sdc",
-				"font": "draw",
+				"font": "mono",
 				"textAlign": "middle",
 				"autoSize": true,
 				"scale": 1
@@ -3461,7 +3380,7 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 19.10345445315886,
+			"x": 21.45892320315886,
 			"y": 18.59004221306759,
 			"rotation": 0,
 			"isLocked": false,
@@ -3472,9 +3391,9 @@
 			"props": {
 				"color": "black",
 				"size": "s",
-				"w": 362.1171875,
+				"w": 357.40625,
 				"text": "lvremove /dev/<vg_name>/<lv_name>",
-				"font": "draw",
+				"font": "mono",
 				"textAlign": "middle",
 				"autoSize": true,
 				"scale": 1
@@ -3564,6 +3483,84 @@
 			"parentId": "shape:VfY6LJ-GiZ-g0c3ZlDN8X",
 			"index": "a1",
 			"typeName": "shape"
+		},
+		{
+			"id": "pointer:pointer",
+			"typeName": "pointer",
+			"x": 201.09828634388725,
+			"y": 854.9352976942596,
+			"lastActivityTimestamp": 1733916087852,
+			"meta": {}
+		},
+		{
+			"followingUserId": null,
+			"opacityForNextShape": 1,
+			"stylesForNextShape": {
+				"tldraw:font": "draw"
+			},
+			"brush": null,
+			"scribbles": [],
+			"cursor": {
+				"type": "move",
+				"rotation": 0
+			},
+			"isFocusMode": false,
+			"exportBackground": true,
+			"isDebugMode": false,
+			"isToolLocked": false,
+			"screenBounds": {
+				"x": 0,
+				"y": 0,
+				"w": 1224,
+				"h": 1223
+			},
+			"insets": [
+				false,
+				false,
+				true,
+				false
+			],
+			"zoomBrush": null,
+			"isGridMode": false,
+			"isPenMode": false,
+			"chatMessage": "",
+			"isChatting": false,
+			"highlightedUserIds": [],
+			"isFocused": true,
+			"devicePixelRatio": 2,
+			"isCoarsePointer": false,
+			"isHoveringCanvas": true,
+			"openMenus": [],
+			"isChangingStyle": false,
+			"isReadonly": false,
+			"meta": {},
+			"duplicateProps": null,
+			"id": "instance:instance",
+			"currentPageId": "page:page",
+			"typeName": "instance"
+		},
+		{
+			"editingShapeId": null,
+			"croppingShapeId": null,
+			"selectedShapeIds": [
+				"shape:9vwICv4ChsAeK9HmPCDhS"
+			],
+			"hoveredShapeId": null,
+			"erasingShapeIds": [],
+			"hintingShapeIds": [],
+			"focusedGroupId": null,
+			"meta": {},
+			"id": "instance_page_state:page:page",
+			"pageId": "page:page",
+			"typeName": "instance_page_state"
+		},
+		{
+			"x": 266.59844955467287,
+			"y": -25.347109889229536,
+			"z": 0.9530330971706323,
+			"meta": {},
+			"id": "camera:page:page",
+			"typeName": "camera"
 		}
 	]
 }
