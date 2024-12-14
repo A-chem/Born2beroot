@@ -169,4 +169,34 @@ We will start by creating this:
 
 1. install [[GRUB (Grand Unified Bootloader)]] boot in the hard disk
 2. choose the device `/dev/sda (ata_VBOX_HARDDISK)` for the installation for boot loader.
-3. finish the installation we click on `Continue`
+3. finish installation
+
+# Starting Your Virtual Machine
+
+1. Press enter on `Debian GNU/Linux`.
+2. Enter your encryption password you had created before.
+3. Login in as the your_username you had created before.
+4. Type `lsblk` in your Virtual Machine to see the partition.
+
+# Configurating Your Virtual Machine
+## Installing [[Sudo]]
+
+1. First type `su -` to login in as the root user.
+2. Then type `apt install sudo`
+3. Verify whether _sudo_ was successfully installed via `dpkg -l | grep sudo`.
+4. Add user to _sudo_ group via `adduser <username> sudo` or  `usermod -aG sudo <username>`
+5. Verify whether user was successfully added to _sudo_ group via `getent group sudo`.
+6. Type `sudo visudo` to open sudoers file
+7. Lastly find - # User privilege specification, type `your_username ALL=(ALL) ALL`.
+- `your_username`: The user to which you're granting sudo privileges.
+- `ALL`: This means the user can run commands from any host (for network configurations).
+- `(ALL)`: The user can run commands as any user, including root.
+- `ALL`: The user can run any command as root.
+9. We must reboot machine so the changes can be applied `sudo reboot`
+## Installing Git and Vim
+
+1. Then type `apt-get install git -y` to install Git
+2. Then type `git --version` to check the Git Version
+1. Then type `apt-get install vim -y` to install Vim
+2. Then type `vim --version` to check the Vim Version
+## Installing and Configuring [[SSH (Secure Shell Host)]]
