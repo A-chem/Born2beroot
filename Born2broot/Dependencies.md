@@ -1,0 +1,1 @@
+Is a piece of software or a library that another program needs to function.

@@ -1,0 +1,1 @@
+An **Operating System (OS)** is software that helps your computer or device work. It manages all the hardware (like the CPU, memory, and keyboard) and software (apps and programs) to make them work together.
