@@ -193,10 +193,120 @@ We will start by creating this:
 - `(ALL)`: The user can run commands as any user, including root.
 - `ALL`: The user can run any command as root.
 9. We must reboot machine so the changes can be applied `sudo reboot`
+##  Creating sudo.log
+
+1. we will create a file in `/etc/sudoerd.d/` The file will serve the purpouse of storing our sudo policy `touch /etc/sudoers.d/sudo_config`
+2. Then type `cd var/log`
+3. Then type `mkdir sudo` (each commands need to be logged, the input and output).
+4.  use `vim/etc/sudoers.d/sudo_config`
+5. we must set it up with the following commands
+`Defaults  passwd_tries=3`
+`Defaults  badpass_message="Mensaje de error personalizado"`
+`Defaults  logfile="/var/log/sudo/sudo_config"`
+`Defaults  log_input, log_output`
+`Defaults  iolog_dir="/var/log/sudo"`
+`Defaults  requiretty`
+`Defaults  secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
+	**passwd_tries=3:** Total tries for entering the sudo password.
+	**badpass_message="message":** The message that will show when the password failed.
+	**logfile="/var/log/sudo/sudo_config":** Path where will the sudo logs will be stored.
+	**log_input, log_output:** What will be logged.
+	**iolog_dir=**"/var/log/sudo": What will be logged.
+	**requiretty:** TTY become required.
+	 **secure_path=**"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin": Folders that will be excluded of sudo
+
 ## Installing Git and Vim
 
 1. Then type `apt-get install git -y` to install Git
 2. Then type `git --version` to check the Git Version
 1. Then type `apt-get install vim -y` to install Vim
 2. Then type `vim --version` to check the Vim Version
-## Installing and Configuring [[SSH (Secure Shell Host)]]
+## Installing & Configuring [[SSH (Secure Shell Host)]]
+
+1. Type `sudo apt install openssh-server`
+2. verify ssh installation `dpkg -l | grep openssh-server`
+3. Type `sudo systemctl status ssh` to check SSH Server Status
+4. Type `sudo vim /etc/ssh/sshd_config`
+5. Find this line `#Port22`
+6. Change the line to `Port 4242` without the # (Hash) in front of it  
+7. Then type `sudo grep Port /etc/ssh/sshd_config` to check if the port settings are right
+8. Lastly type `sudo service ssh restart` to restart the SSH Service
+
+##  Installing & Configuring [[UFW (Uncomplicated Firewall)]]
+
+1. First type `apt-get install ufw` to install UFW
+2. verify ssh installation  `dpkg -l | grep ufw`
+3. Type `sudo ufw enable` to inable UFW
+4. Type `sudo ufw status numbered`  or `sudo systemctl status ufw` to check the status of UFW
+5. Type `sudo ufw allow ssh` to configure the Rules
+6. Type `sudo ufw allow 4242` to configure the Port Rules
+7. Lastly Type `sudo ufw status numbered` to check the status of UFW 4242 Port
+
+## Connecting to SSH
+
+0. Go to your Virtual Box Program
+1. Click on your Virtual Machine and select `Settings`
+2. Click `Network` then `Adapter 1` then `Advanced` and then click on `Port Forwarding`
+3. Change the Host Port and Guest Port to `4242`
+4. Type `sudo systemctl restart ssh` to restart your SSH Server
+5. Type `sudo service sshd status` to check your SSH Status
+6. Open an iTerm and type the following `ssh your_username@127.0.0.1 -p 4242`
+
+## User Management
+
+### Step 1: Setting Up a Strong Password Policy
+
+ 1. Configure password age policy via `sudo vi /etc/login.defs`.
+ 2. we will set the next parameters: `PASS_MAX_DAYS 99999 -> PASS_MAX_DAYS 30 /PASS_MIN_DAYS 0 -> PASS_MIN_DAYS 
+ 
+	 PASS_MAX_DAYS: It's the max days till password expiration.
+
+	PASS_MIN_DAYS: It's the min days till password change.
+
+	PASS_WARN_AGE: It's the days till password warning.
+
+3. `sudo apt-get install libpam-pwquality` to install Password Quality Checking Library
+4. verify libmap installation  `dpkg -l | grep libpam-pwdquality`
+5. 1. Then type `sudo vim /etc/pam.d/common-password`
+6. Find this line. `password requisite pam_pwdquality.so retry=3`
+7. Add this to the end of that line `minlen=10 ucredit=-1 lcredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root`
+
+	minlen=10 ➤ The minimun characters a password must contain.
+
+	ucredit=-1 ➤ The password at least have to contain a capital letter. We must write it with a - sign, as is how it knows that's refering to minumum caracters; if we put a + sign it will refer to maximum characters.
+
+	dcredit=-1 ➤ The passworld at least have to containt a digit.
+
+	lcredit=-1 ➤ The password at least have to contain a lowercase letter.
+
+	maxrepeat=3 ➤ The password can not have the same character repited three contiusly times.
+
+	reject_username ➤ The password can not contain the username inside itself.
+
+	difok=7 ➤ The password it have to containt at least seven diferent characters from the last password ussed.
+
+	enforce_for_root ➤ We will implement this password policy to root.
+
+### Step 2: Creating a New User
+
+1. First type `id username` to check all local users
+2. Type `sudo adduser new_username` to create a username - write down your new_username, as you will need this later on.
+
+- 2.1 Type `sudo usermod -aG user42 your_username`
+- 2.2 Type `sudo usermod -aG evaluating your_new_username`
+
+3. Type `getent group user42` to check if the user is the group
+4. Type `getent group evaluating` to check the group
+5. Type `groups` to see which groups the user account belongs to
+6. Lastly type `chage -l your_new_username` to check if the password rules are working in users
+
+##  [[Crontab]] Configuation
+
+is a background process manager. The specified processes will be executed at the time you specify in the crontab file.
+
+1. Then type `apt-get install -y net-tools` to install the netstat tools
+2. Then type `cd /usr/local/bin/`
+3. Then type `touch monitoring.sh`
+4. Lastly type `chmod 777 monitoring.sh` 
+5. we must edit the crontab file `sudo crontab -u root -e`
+6. In the file, we must add the following command for the script to execute every 10 minutes `*/10 * * * * sh /path_to_file.sh`
