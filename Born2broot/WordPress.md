@@ -1,0 +1,1 @@
+It is a content management system focused on the creation of any type of website.

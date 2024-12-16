@@ -195,26 +195,14 @@ We will start by creating this:
 9. We must reboot machine so the changes can be applied `sudo reboot`
 ##  Creating sudo.log
 
-1. we will create a file in `/etc/sudoerd.d/` The file will serve the purpouse of storing our sudo policy `touch /etc/sudoers.d/sudo_config`
-2. Then type `cd var/log`
-3. Then type `mkdir sudo` (each commands need to be logged, the input and output).
-4.  use `vim/etc/sudoers.d/sudo_config`
-5. we must set it up with the following commands
-`Defaults  passwd_tries=3`
-`Defaults  badpass_message="Mensaje de error personalizado"`
-`Defaults  logfile="/var/log/sudo/sudo_config"`
-`Defaults  log_input, log_output`
-`Defaults  iolog_dir="/var/log/sudo"`
-`Defaults  requiretty`
-`Defaults  secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
-	**passwd_tries=3:** Total tries for entering the sudo password.
-	**badpass_message="message":** The message that will show when the password failed.
-	**logfile="/var/log/sudo/sudo_config":** Path where will the sudo logs will be stored.
-	**log_input, log_output:** What will be logged.
-	**iolog_dir=**"/var/log/sudo": What will be logged.
-	**requiretty:** TTY become required.
-	 **secure_path=**"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin": Folders that will be excluded of sudo
-
+1. Limit Authentication Attempts to 3. Open the sudoers file using `sudo visudo` and Add or modify the following line `Defaults        passwd_tries=3`
+2. Display a Custom Error Message for Wrong Password In the same `sudoers` file, add or modify `Defaults badpass_message="Your custom error message here"`
+3. Archive sudo Actions in /var/log/sudo To log all sudo activities (both inputs and outputs) in a specific directory `sudo mkdir -p /var/log/sudo` and `sudo chmod 700 /var/log/sudo` In the `sudoers` file, add or modify : `Defaults log_input`  `Defaults log_output`  `Defaults iolog_dir=/var/log/sudo`
+- `log_input`: Archives the commands run using `sudo`.
+- `log_output`: Archives the output of those commands.
+- `iolog_dir`: Specifies the directory where logs are saved.
+4.  Enable [[TTY]] Mode for Security. Enabling TTY ensures sudo commands can only be run from a terminal session, adding an extra layer of security. Add or modify the following line in the `sudoers` file: `Defaults        requiretty`
+5. Restrict Paths for sudo. Restricting paths ensures users can only execute commands located in approved directories, reducing potential misuse.Add or modify the following line in the `sudoers` file: - `Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
 ## Installing Git and Vim
 
 1. Then type `apt-get install git -y` to install Git
@@ -228,10 +216,11 @@ We will start by creating this:
 3. Type `sudo systemctl status ssh` to check SSH Server Status
 4. Type `sudo vim /etc/ssh/sshd_config`
 5. Find this line `#Port22`
-6. Change the line to `Port 4242` without the # (Hash) in front of it  
-7. Then type `sudo grep Port /etc/ssh/sshd_config` to check if the port settings are right
-8. Lastly type `sudo service ssh restart` to restart the SSH Service
-
+6. Change the line to `Port 4242` without the # (Hash) in front of it  and disable root login `PermitRootLogin no` if y want restrict SSH access to specific users(Optional, but recommended) `AllowUsers your_username`
+7. Restart the SSH service to apply changes `sudo systemctl restart sshd`
+8. Check if SSH is running on the correct port: `sudo ss -tuln | grep 4242` You should see something like: `LISTEN 0 128 0.0.0.0:4242 0.0.0.0:*`
+9. Then type `sudo grep Port /etc/ssh/sshd_config` to check if the port settings are right
+10. Use a second terminal or another machine to test `ssh your_username@your_vm_ip -p 4242` and You should not be able to connect as root `ssh root@your_vm_ip -p 4242`This should fail with a message like: - `Permission denied (publickey, password).`
 ##  Installing & Configuring [[UFW (Uncomplicated Firewall)]]
 
 1. First type `apt-get install ufw` to install UFW
@@ -254,53 +243,33 @@ We will start by creating this:
 
 ## User Management
 
-### Step 1: Setting Up a Strong Password Policy
+### Step 1: Modify the Hostname
 
- 1. Configure password age policy via `sudo vi /etc/login.defs`.
- 2. we will set the next parameters: `PASS_MAX_DAYS 99999 -> PASS_MAX_DAYS 30 /PASS_MIN_DAYS 0 -> PASS_MIN_DAYS 
- 
-	 PASS_MAX_DAYS: It's the max days till password expiration.
+ 1. Change the hostname to your login followed by `42` use command `sudo hostnamectl set-hostname wil42`. Verify the change : `hostnamectl`
+### Step 2: Implement the Strong Password Policy
 
-	PASS_MIN_DAYS: It's the min days till password change.
+To implement the password policy, you need to modify the `/etc/login.defs` file and set password aging rules, as well as configure `pam_pwquality.so` for password strength.
 
-	PASS_WARN_AGE: It's the days till password warning.
+1. Set Password Aging Rules. Edit `/etc/login.defs` to configure password expiration and minimum password change settings: `sudo nano /etc/login.defs` and Add or modify the following lines:
 
-3. `sudo apt-get install libpam-pwquality` to install Password Quality Checking Library
-4. verify libmap installation  `dpkg -l | grep libpam-pwdquality`
-5. 1. Then type `sudo vim /etc/pam.d/common-password`
-6. Find this line. `password requisite pam_pwdquality.so retry=3`
-7. Add this to the end of that line `minlen=10 ucredit=-1 lcredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root`
+- `PASS_MAX_DAYS   30       # Maximum days before password expires`
+- `PASS_MIN_DAYS   2        # Minimum days before password can be changed`
+- `PASS_WARN_AGE   7        # Number of days before expiry to warn user`
 
-	minlen=10 ➤ The minimun characters a password must contain.
+2. `sudo apt-get install libpam-pwquality` to install Password Quality Checking Library
+3. Configure Password Complexity. Edit `/etc/pam.d/common-password`. Add the following line :`password requisite pam_pwquality.so retry=3 minlen=10 ucredit=-1 lcredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root`
+4. Check the password expiration date using the `chage` command:`sudo chage -l testuser`
 
-	ucredit=-1 ➤ The password at least have to contain a capital letter. We must write it with a - sign, as is how it knows that's refering to minumum caracters; if we put a + sign it will refer to maximum characters.
+### Step 3:Create the User with Your Login as Username &Create group user42
 
-	dcredit=-1 ➤ The passworld at least have to containt a digit.
-
-	lcredit=-1 ➤ The password at least have to contain a lowercase letter.
-
-	maxrepeat=3 ➤ The password can not have the same character repited three contiusly times.
-
-	reject_username ➤ The password can not contain the username inside itself.
-
-	difok=7 ➤ The password it have to containt at least seven diferent characters from the last password ussed.
-
-	enforce_for_root ➤ We will implement this password policy to root.
-
-### Step 2: Creating a New User
-
-1. First type `id username` to check all local users
-2. Type `sudo adduser new_username` to create a username - write down your new_username, as you will need this later on.
-
-- 2.1 Type `sudo usermod -aG user42 your_username`
-- 2.2 Type `sudo usermod -aG evaluating your_new_username`
-
-3. Type `getent group user42` to check if the user is the group
-4. Type `getent group evaluating` to check the group
-5. Type `groups` to see which groups the user account belongs to
-6. Lastly type `chage -l your_new_username` to check if the password rules are working in users
-
+To create a user with your login name (e.g., `wil42`) and make sure they belong to both the `user42` and `sudo` groups:
+1. Create the user: `sudo useradd wil42`
+2. Set a password for the user: `sudo passwd wil42`
+3. Add the user to the `user42` and `sudo` groups: `sudo usermod -aG user42,sudo wil42`
+4. Verify group membership: `groups wil42`
+5. Create a new group  `sudo groupadd groupname`
 ##  [[Crontab]] Configuation
+
 
 is a background process manager. The specified processes will be executed at the time you specify in the crontab file.
 
@@ -310,3 +279,72 @@ is a background process manager. The specified processes will be executed at the
 4. Lastly type `chmod 777 monitoring.sh` 
 5. we must edit the crontab file `sudo crontab -u root -e`
 6. In the file, we must add the following command for the script to execute every 10 minutes `*/10 * * * * sh /path_to_file.sh`
+
+`#!/bin/bash`
+
+`Get system architecture and kernel version`
+`architecture=$(uname -m)`
+`kernel_version=$(uname -r)`
+
+`Get the number of physical and virtual processors`
+`physical_processors=$(nproc --all)`
+`virtual_processors=$(lscpu | grep "^CPU(s):" | awk '{print $2}')`
+
+`Get memory usage`
+`ram_usage=$(free -h | grep Mem | awk '{print $3 "/" $2 " (" $3/$2*100 "%)"}')`
+
+`Get disk usage`
+`disk_usage=$(df -h | grep '^/dev/' | awk '{print $3 "/" $2 " (" $5 ")"}')`
+
+`Get CPU load`
+`cpu_load=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1 "%"}')`
+
+`Get last reboot time`
+`last_reboot=$(who -b | awk '{print $3, $4}')`
+
+ `Check if LVM is active`
+`lvm_status=$(lsblk | grep -q "lvm" && echo "Yes" || echo "No")`
+
+ `Get active connections`
+`active_connections=$(ss -tuln | grep -c 'ESTAB')`
+
+`Get the number of logged-in users`
+`logged_in_users=$(who | wc -l)`
+
+`Get IP and MAC addresses`
+`ip_address=$(hostname -I | awk '{print $1}')`
+`mac_address=$(cat /sys/class/net/eth0/address)`
+
+`Get the number of sudo commands executed`
+`sudo_count=$(grep -c 'sudo' /var/log/auth.log)`
+
+ `Combine everything into a message`
+`message="`
+`Architecture: $architecture`
+`Kernel: $kernel_version`
+`Physical CPUs: $physical_processors`
+`vCPUs: $virtual_processors`
+`Memory Usage: $ram_usage`
+`Disk Usage: $disk_usage`
+`CPU Load: $cpu_load`
+`Last Boot: $last_reboot`
+`LVM Active: $lvm_status`
+`Active Connections: $active_connections`
+`Logged-in Users: $logged_in_users`
+`IP: $ip_address (MAC: $mac_address)`
+`Sudo Commands: $sudo_count`
+`"`
+
+`Display the message on all terminals`
+`echo "$message" | wall`
+
+# BONUS SERVICES
+## Install [[Lighttpd]]
+
+1. `sudo apt install lighttpd 
+2. start and enable the Lighttpd service: `sudo systemctl start lighttpd`
+3. We allow connections through port 80 with the command: `sudo ufw allow 80`
+4. We check that we have actually allowed it. Port 80 and allow should appear: `sudo ufw status`
+5. To install the latest version of [[WordPress]] we must first install wget and zip. To do this we will use the following command: `sudo apt install wget zip` 
+6. locate ourselves in the folder /var/www/ with the command : `cd /var/www/` download the latest version of WordPress `sudo wget` https://es.wordpress.org/latest-es_ES.zip 
+7. 1. Unzip the file you just downloaded with the command: `sudo unzip latest-en_US.zip`
