@@ -81,4 +81,4 @@ SSH uses the client-server model. To establish a secure SSH channel, the two par
 - For example, you can use a command like `ssh -L 8080:localhost:80` to securely forward traffic from your local computer's port 8080 to port 80 on the remote server. This is useful if you want to access a website on the server but keep it secure.
 
 
-[[image(ssh).webp]]
+[[image(ssh).webp]]fgc

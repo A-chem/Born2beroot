@@ -197,7 +197,7 @@ We will start by creating this:
 
 1. Limit Authentication Attempts to 3. Open the sudoers file using `sudo visudo` and Add or modify the following line `Defaults        passwd_tries=3`
 2. Display a Custom Error Message for Wrong Password In the same `sudoers` file, add or modify `Defaults badpass_message="Your custom error message here"`
-3. Archive sudo Actions in /var/log/sudo To log all sudo activities (both inputs and outputs) in a specific directory `sudo mkdir -p /var/log/sudo` and `sudo chmod 700 /var/log/sudo` In the `sudoers` file, add or modify : `Defaults log_input`  `Defaults log_output`  `Defaults iolog_dir=/var/log/sudo`
+3. Archive sudo Actions in /var/log/sudo To log all sudo activities (both inputs and outputs) in a specific directory `sudo mkdir -p /var/log/sudo` and `sudo chmod 700 /var/log/sudo` In the `sudoers` file, add or modify : `Defaults log_input, log_output, iolog_dir=/var/log/sudo`
 - `log_input`: Archives the commands run using `sudo`.
 - `log_output`: Archives the output of those commands.
 - `iolog_dir`: Specifies the directory where logs are saved.
@@ -213,13 +213,13 @@ We will start by creating this:
 
 1. Type `sudo apt install openssh-server`
 2. verify ssh installation `dpkg -l | grep openssh-server`
-3. Type `sudo systemctl status ssh` to check SSH Server Status
-4. Type `sudo vim /etc/ssh/sshd_config`
+3. Type `sudo systemctl status ssh`  or  `sudo service ssh status` to check SSH Server Status
+4. with the file [[sshd_config]] `sudo vim /etc/ssh/sshd_config`
 5. Find this line `#Port22`
-6. Change the line to `Port 4242` without the # (Hash) in front of it  and disable root login `PermitRootLogin no` if y want restrict SSH access to specific users(Optional, but recommended) `AllowUsers your_username`
-7. Restart the SSH service to apply changes `sudo systemctl restart sshd`
-8. Check if SSH is running on the correct port: `sudo ss -tuln | grep 4242` You should see something like: `LISTEN 0 128 0.0.0.0:4242 0.0.0.0:*`
-9. Then type `sudo grep Port /etc/ssh/sshd_config` to check if the port settings are right
+6. Change the line to `Port 4242` without the # (Hash) in front of it  and disable root login `PermitRootLogin no` if y want restrict SSH access to specific users(Optional, but recommended) `AllowUsers 
+7. Now with the file  [[ssh_config]] `/etc/ssh/ssh_config`. (not `sshd_config`) :`nano /etc/ssh/ssh_config`
+8. Restart the SSH service to apply changes `sudo systemctl restart sshd` or `sudo service ssh restart`
+9. Check if SSH is running on the correct port: `sudo ss -tuln | grep 4242` You should see something like: `LISTEN 0 128 0.0.0.0:4242 0.0.0.0:*`
 10. Use a second terminal or another machine to test `ssh your_username@your_vm_ip -p 4242` and You should not be able to connect as root `ssh root@your_vm_ip -p 4242`This should fail with a message like: - `Permission denied (publickey, password).`
 ##  Installing & Configuring [[UFW (Uncomplicated Firewall)]]
 
@@ -252,9 +252,10 @@ To implement the password policy, you need to modify the `/etc/login.defs` file 
 
 1. Set Password Aging Rules. Edit `/etc/login.defs` to configure password expiration and minimum password change settings: `sudo nano /etc/login.defs` and Add or modify the following lines:
 
-- `PASS_MAX_DAYS   30       # Maximum days before password expires`
-- `PASS_MIN_DAYS   2        # Minimum days before password can be changed`
-- `PASS_WARN_AGE   7        # Number of days before expiry to warn user`
+- `PASS_MAX_DAYS   30       # Maximum days before password expires | sudo chage -M 30 username
+` 
+- `PASS_MIN_DAYS   2        # Minimum days before password can be changed | sudo chage -m 2 username`
+- `PASS_WARN_AGE   7        # Number of days before expiry to warn user | sudo chage -W 7 username`
 
 2. `sudo apt-get install libpam-pwquality` to install Password Quality Checking Library
 3. Configure Password Complexity. Edit `/etc/pam.d/common-password`. Add the following line :`password requisite pam_pwquality.so retry=3 minlen=10 ucredit=-1 lcredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root`
@@ -268,76 +269,146 @@ To create a user with your login name (e.g., `wil42`) and make sure they belong 
 3. Add the user to the `user42` and `sudo` groups: `sudo usermod -aG user42,sudo wil42`
 4. Verify group membership: `groups wil42`
 5. Create a new group  `sudo groupadd groupname`
-##  [[Crontab]] Configuation
-
-
-is a background process manager. The specified processes will be executed at the time you specify in the crontab file.
-
-1. Then type `apt-get install -y net-tools` to install the netstat tools
-2. Then type `cd /usr/local/bin/`
-3. Then type `touch monitoring.sh`
-4. Lastly type `chmod 777 monitoring.sh` 
-5. we must edit the crontab file `sudo crontab -u root -e`
-6. In the file, we must add the following command for the script to execute every 10 minutes `*/10 * * * * sh /path_to_file.sh`
-
+##  Script
+1. Edit the crontab file `sudo crontab -u` [[Cron]]
+2. `*/10 * * * * sh /home/achemlal/monitoring.sh`.
 `#!/bin/bash`
 
-`Get system architecture and kernel version`
-`architecture=$(uname -m)`
-`kernel_version=$(uname -r)`
-
-`Get the number of physical and virtual processors`
-`physical_processors=$(nproc --all)`
-`virtual_processors=$(lscpu | grep "^CPU(s):" | awk '{print $2}')`
-
-`Get memory usage`
-`ram_usage=$(free -h | grep Mem | awk '{print $3 "/" $2 " (" $3/$2*100 "%)"}')`
-
-`Get disk usage`
-`disk_usage=$(df -h | grep '^/dev/' | awk '{print $3 "/" $2 " (" $5 ")"}')`
-
-`Get CPU load`
-`cpu_load=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1 "%"}')`
-
-`Get last reboot time`
-`last_reboot=$(who -b | awk '{print $3, $4}')`
-
- `Check if LVM is active`
-`lvm_status=$(lsblk | grep -q "lvm" && echo "Yes" || echo "No")`
-
- `Get active connections`
-`active_connections=$(ss -tuln | grep -c 'ESTAB')`
-
-`Get the number of logged-in users`
-`logged_in_users=$(who | wc -l)`
-
-`Get IP and MAC addresses`
-`ip_address=$(hostname -I | awk '{print $1}')`
-`mac_address=$(cat /sys/class/net/eth0/address)`
-
-`Get the number of sudo commands executed`
-`sudo_count=$(grep -c 'sudo' /var/log/auth.log)`
-
- `Combine everything into a message`
-`message="`
-`Architecture: $architecture`
-`Kernel: $kernel_version`
-`Physical CPUs: $physical_processors`
-`vCPUs: $virtual_processors`
-`Memory Usage: $ram_usage`
-`Disk Usage: $disk_usage`
-`CPU Load: $cpu_load`
-`Last Boot: $last_reboot`
-`LVM Active: $lvm_status`
-`Active Connections: $active_connections`
-`Logged-in Users: $logged_in_users`
-`IP: $ip_address (MAC: $mac_address)`
-`Sudo Commands: $sudo_count`
+`wall "`
+`Broadcast message from root@$(hostname) (tty1) ($(date)):`
+`#Architecture: $(uname -a)`
+`#CPU physical: $(nproc --all)`
+`#vCPU: $(nproc)`
+`#Memory Usage: $(free -m | awk 'NR==2 {print $3}')/$(free -m | awk 'NR==2 {print $2}')MB ($(free -m | awk 'NR==2 {print $3/$2*100}' | xargs printf "%.2f"))%`
+`#Disk Usage: $(df -h / | awk 'NR==2 {print $3}')/$(df -h / | awk 'NR==2 {print $2}') ($(df -h / | awk 'NR==2 {print $5}'))`
+`#CPU load: $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')%`
+`#Last boot: $(uptime -s | awk '{print $1 " " $2}')`
+`#LVM use: $(lsblk -o NAME,TYPE | grep -q 'lvm' && echo yes || echo no)`
+`#Connections TCP: $(ss -t | grep ESTAB | wc -l) ESTABLISHED`
+`#User log: $(who | wc -l)`
+`#Network: IP $(hostname -I | awk '{print $1}') ($(ip link show | grep 'ether' | awk '{print $2}'))`
+`#Sudo: $(journalctl _COMM=sudo | grep COMMAND | wc -l) cmd`
 `"`
-
-`Display the message on all terminals`
-`echo "$message" | wall`
-
+`#!/bin/bash`
+`while true`
+	`do`
+	`sleep 60`
+	`wall "`
+		`#Architecture: $(uname -a)`
+		`#CPU physical: $(nproc --all)`
+		`#vCPU: $(nproc)`
+		`#Memory Usage: $(free -m | awk 'NR==2 {print $3}')/$(free -m | awk 'NR==2 {print $2}')MB ($(free -m | awk 'NR==2 {print $3/$2*100}' | xargs printf "%.2f"))%`
+		`#Disk Usage: $(df -h / | awk 'NR==2 {print $3}')/$(df -h / | awk 'NR==2 {print $2}') ($(df -h / | awk 'NR==2 {print $5}'))`
+		`#CPU load: $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')%`
+		`#Last boot: $(uptime -s | awk '{print $1 " " $2}')`
+		`#LVM use: $(lsblk -o NAME,TYPE | grep -q 'lvm' && echo yes || echo no)`
+		`#Connections TCP: $(ss -t | grep ESTAB | wc -l) ESTABLISHED`
+		`#User log: $(who | wc -l)`
+		`#Network: IP $(hostname -I | awk '{print $1}') ($(ip link show | grep 'ether' | awk '{print $2}'))`
+		`#Sudo: $(journalctl _COMM=sudo | grep COMMAND | wc -l) cmd"`
+	`done`
+`@reboot sh /home/achemlal/monitoring.sh`
+1. **System Architecture** 
+	`#Architecture: $(uname -a)`
+	- **`uname -a`**: 
+	This command shows details about the operating system, including the version of the kernel, the architecture (whether it's a 32-bit or 64-bit system), and other information.
+2. **Number of Physical CPUs**  
+	`#CPU physical: $(nproc --all)`
+	- **`nproc --all`**:
+	This tells you how many physical CPU cores your machine has. For example, if you have a 4-core processor, this will return `4`.
+3. **Number of Virtual CPUs** 
+	`#vCPU: $(nproc)`
+	 - **`nproc`**:
+	 This command shows how many virtual CPU cores your machine has. This is usually the same number or higher than the number of physical CPUs, especially if your system supports **hyperthreading** (a technology that lets each physical core act like two virtual cores).
+4. **Memory Usage**
+	`#Memory Usage: $(free -m | awk 'NR==2 {print $3}')/$(free -m | awk 'NR==2 {print 
+	- **`free`** 
+	command in Linux shows the system's memory usage, including the amount of free and used memory.
+	- **`-m`** 
+	flag is used to display the values in **megabytes (MB)**, rather than the default **kilobytes (KB)**.
+	- **`awk`** 
+	is a powerful scripting language used for manipulating data and generating reports, supporting variables, numeric and string functions, and logical operators without requiring compilation. It enables pattern scanning and processing, allowing users to define actions to take when specific text patterns are matched in files or lines of a document
+	- **`NR==2`** 
+	means "process the second line" (NR stands for "Number of Records", i.e., the line number in the input).
+	- **`{print $3}`**
+	means "print the third column" of the second line.
+	- **`awk 'NR==2 {print $3}'`**
+	Extracts the third column (used memory) from the second line of the `free -m` output.
+5. **Disk Usage** 
+	`$(df -h / | awk 'NR==2 {print $3}')/$(df -h / | awk 'NR==2 {print $2}') ($(df -h / | awk 'NR==2 {print $5}'))`
+	- **`df -h /`** 
+	This checks the disk usage of the root directory `/` and outputs the result in a human-readable format (e.g., KB, MB, GB).
+	- **`awk 'NR==2 {print $3}'`** :
+    This extracts the "Used" space from the second line of the `df` output (which corresponds to the `/` filesystem).
+	- **`awk 'NR==2 {print $2}'`** 
+	This extracts the "Size" (total space) from the second line.
+	- **`awk 'NR==2 {print $5}'`** 
+	This extracts the "Use%" (percentage used) from the second line.
+6. **CPU Load** 
+	`$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')%`
+	- **`s/`**:  
+    This begins the **substitution** in `sed`. It tells `sed` to search for a specific pattern and replace it with something else.
+	- **`.*, *`**:
+    - `.*` matches any characters (zero or more) up until the first instance of the next part of the pattern.
+    - `, *` matches a comma (`,`) followed by zero or more spaces.
+    - Together, `.*, *` is used to skip over all the characters before the actual CPU usage information. In the case of the `top` command output, it would match everything before the CPU stats.
+	- **`\([0-9.]*\)`**:
+    - This is a **capture group**. The part inside `\(` and `\)` will be captured for later use in the substitution (replaced by `\1`).
+    - `[0-9.]*` matches any number of digits (`0-9`) or decimal points (`.`). This part is intended to capture the **idle CPU percentage** (e.g., `75.2` for 75.2% idle).
+	- **`%* id.*`**:
+    - `%*` matches zero or more `%` symbols. This is used to match the percentage symbol that follows the number (in case there are extra spaces or symbols after the percentage).
+    - `id.*` matches the word `id` followed by any number of characters after it. This part is included because `id` represents the idle CPU percentage in the `top` command output, and we want to capture everything up to that point to extract the number.
+	- **`\1`**:
+    - This refers to the first captured group, which is the number corresponding to the idle CPU percentage.
+7. **Last Boot Time**
+	`$(uptime -s | awk '{print $1 " " $2}')`
+	 - **`uptime -s`** 
+		 This gives you the system's uptime start time.
+	- **`awk '{print $1 " " $2}'`**
+		This is used to format the output from `uptime -s`
+8. **LVM (Logical Volume Management)** 
+	`$(lsblk -o NAME,TYPE | grep -q 'lvm' && echo yes || echo no)`
+	- `lsblk -o NAME,TYPE`:
+	    - `lsblk` lists information about all available block devices (like hard drives and partitions).
+	    - The `-o NAME,TYPE` option specifies that only the `NAME` (device name, e.g., `/dev/sda1`) and `TYPE` (type of the device, e.g., `part` or `lvm`) will be shown.
+	- `grep -q 'lvm'`:
+	    This searches for the word `lvm` in the output of `lsblk`. The `-q` flag tells `grep` to operate quietly (i.e., it doesn't display any matches but only sets the exit status).
+	- `&& echo yes || echo no`:
+    - This is a conditional check.
+    - If the `grep` command finds `lvm` in the `lsblk` output, the exit status will be `0` (success), and `echo yes` will be executed.
+    - If `grep` does not find `lvm`, the exit status will be non-zero (failure), and `echo no` will be executed.
+9. **TCP Connections** 
+	`$(ss -t | grep ESTAB | wc -l) ESTABLISHED`
+	- `ss -t`
+		This lists all TCP sockets. The `-t` flag is used to show TCP connections.
+	- `grep ESTAB`
+		Filters the output of `ss` to show only the lines that contain "ESTAB", which indicates an established connection.
+	- `wc -l`
+		Counts the number of lines from the previous output, which corresponds to the number of established TCP connections.
+10. **Logged-In Users**
+	`$(who | wc -l)`
+	- **`who`**:
+		The `who` command is used to display information about users who are currently logged into the system. It shows details like the username, terminal, login time, etc.
+	 - **`wc -l`** 
+		 command counts the number of lines in the input it receives. In this case, it counts how many users are logged in because each user will appear on a separate line in the output of `who`.
+11. **Network Information (IP and MAC addresses)**
+	`IP $(hostname -I | awk '{print $1}') ($(ip link show | grep 'ether' | awk '{print $2}'))`
+	- **`hostname -I`**
+		This command returns all the IP addresses assigned to the host, and `awk '{print $1}'` will print the first one (in case there are multiple).
+	- **`ip link show`**
+		This command displays information about all network interfaces.
+	- **`grep 'ether'`**
+		Filters the output to show only lines with the MAC address.
+	- **`awk '{print $2}'`**
+		Extracts the MAC address from the second field of the output.
+12. **Number of `sudo` Commands Executed**
+	`$(journalctl _COMM=sudo | grep COMMAND | wc -l) cmd`
+	- `journalctl _COMM=sudo`
+		Filters journal logs for entries related to the `sudo` command. The `_COMM=sudo` filter ensures you're only looking at logs for commands run with `sudo`.
+	- `grep COMMAND`
+		Looks for lines containing the string `COMMAND`, which appears in the logs when a sudo command is executed.
+	- `wc -l`
+		Counts the number of matching lines.
 # BONUS SERVICES
 ## Install [[Lighttpd]]
 

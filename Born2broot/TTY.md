@@ -29,3 +29,11 @@ You need to modify the **sudoers file** to require TTY mode for all users.
     
     - This enforces TTY mode, meaning `sudo` commands can only be run from an interactive terminal.
 3. Save and exit the file.
+
+### A Simple Example:
+
+1. You open a **Terminal** (a text screen) on your computer.
+2. You type a command like `sudo`, which means "I want to do something as an admin."
+3. The computer checks if you are using TTY (because only real users should be allowed to do admin tasks).
+4. If you are using a TTY (i.e., you are typing commands in the terminal), the computer allows the admin task.
+5. If not (for exam
