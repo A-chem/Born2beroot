@@ -297,7 +297,7 @@ To create a user with your login name (e.g., `wil42`) and make sure they belong 
 		`#Architecture: $(uname -a)`
 		`#CPU physical: $(nproc --all)`
 		`#vCPU: $(nproc)`
-		`#Memory Usage: $(free -m | awk 'NR==2 {print $3}')/$(free -m | awk 'NR==2 {print $2}')MB ($(free -m | awk 'NR==2 {print $3/$2*100}' | xargs printf "%.2f"))%`
+		`#Memory Usage: $(free --mega | awk 'NR==2 {print $3}')/$(free -mega | awk 'NR==2 {print $2}')MB ($(free --mega | awk 'NR==2 {print $3/$2*100}' | xargs printf "%.2f"))%`
 		`#Disk Usage: $(df -h / | awk 'NR==2 {print $3}')/$(df -h / | awk 'NR==2 {print $2}') ($(df -h / | awk 'NR==2 {print $5}'))`
 		`#CPU load: $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')%`
 		`#Last boot: $(uptime -s | awk '{print $1 " " $2}')`
@@ -410,12 +410,5 @@ To create a user with your login name (e.g., `wil42`) and make sure they belong 
 	- `wc -l`
 		Counts the number of matching lines.
 # BONUS SERVICES
-## Install [[Lighttpd]]
-
-1. `sudo apt install lighttpd 
-2. start and enable the Lighttpd service: `sudo systemctl start lighttpd`
-3. We allow connections through port 80 with the command: `sudo ufw allow 80`
-4. We check that we have actually allowed it. Port 80 and allow should appear: `sudo ufw status`
-5. To install the latest version of [[WordPress]] we must first install wget and zip. To do this we will use the following command: `sudo apt install wget zip` 
-6. locate ourselves in the folder /var/www/ with the command : `cd /var/www/` download the latest version of WordPress `sudo wget` https://es.wordpress.org/latest-es_ES.zip 
-7. 1. Unzip the file you just downloaded with the command: `sudo unzip latest-en_US.zip`
+1. Install [[Lighttpd]]  `sudo apt install lighttpd`
+2. 
